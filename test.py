@@ -29,46 +29,46 @@ def perplexity(Prob_dist, filename):
 
 myset = Set([1,2,3,4,5]);
 temp = myset
-
+fp = open('results_unigram','w+')
 Pos_Dict= dict()
 Neg_Dict= dict()
 for x in myset:
 	temp.remove(x)
-        Pos_Dict = get_unigram('pos','/home/chintu/NLP/hw1/dataset',temp)
+        Pos_Dict = get_unigram('pos','/home/avj/Documents/NLP/NLP_BinaryClassifier/dataset',temp)
 	# Calculate pos_perplexity
 	print len(Pos_Dict)
-        Neg_Dict = get_unigram('neg','/home/chintu/NLP/hw1/dataset',temp)
+        Neg_Dict = get_unigram('neg','/home/avj/Documents/NLP/NLP_BinaryClassifier/dataset',temp)
 	print len(Neg_Dict)
 	# Calculate neg_perplexity
-	fpath = '/home/chintu/NLP/hw1/dataset/'+str(x)
+	fpath = '/home/avj/Documents/NLP/NLP_BinaryClassifier/dataset/'+str(x)
 	test_file_p = os.listdir(fpath +'/pos')
 	test_file_n = os.listdir(fpath+'/neg') 
-	print "Test folder:",x
+	fp.writelines("Test folder:"+str(x)+"\n")
 	#test positive folder under test folder
 	
 	for test in test_file_p:
 		pos_perp = perplexity(Pos_Dict, fpath+"/pos/"+test)
 		neg_perp = perplexity(Neg_Dict, fpath+"/pos/"+test)
 		if pos_perp < neg_perp:
-			print "original pos\t"+test+"\tpred pos"
+			fp.writelines("original pos\t"+test+"\tpred pos\n")
 		else:
-			print "original pos\t"+test+"\tpred neg"
+			fp.writelines("original pos\t"+test+"\tpred neg\n")
 	#test negative folder under test folder
-	'''
+	
 	for test in test_file_n:
 		
                 pos_perp = perplexity(Pos_Dict, fpath+"/neg/"+test) 
-                print pos_perp
+                #print pos_perp
 	
 		neg_perp = perplexity(Neg_Dict, fpath+"/neg/"+test) 
-        	print neg_perp
+        	#print neg_perp
 	        if pos_perp < neg_perp:
-                        print "original neg\t"+test+"\tpred pos"
+                        fp.writelines("original neg\t"+test+"\tpred pos\n")
                 else:
-                        print "original neg\t"+test+"\tpred neg"
+                        fp.writelines("original neg\t"+test+"\tpred neg\n")
 		 
- 	'''
+ 	print "in progress"	
 	temp.add(x)
-	break
-	
+
+fp.close()	
 #print Pos_Dict
