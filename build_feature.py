@@ -7,6 +7,7 @@ import os
 from math import *
 from nltk.probability import FreqDist
 from collections import OrderedDict
+import operator
 
 def build(master_dict, path, l, fh):
 	master = ()
@@ -17,7 +18,12 @@ def build(master_dict, path, l, fh):
 		m_dict[item] = 0	
 
 	temp = get_unigram_file(path)
-	m_dict.update(temp)
+	for key in m_dict.iterkeys():
+		if key in temp.keys():
+			m_dict[key] = temp[key]
+		else:
+			m_dict[key] = 0
+	#m_dict.update(temp)
 	values = list()
 	for val in m_dict.itervalues():
 		values.append(str(val))
@@ -27,7 +33,7 @@ def build(master_dict, path, l, fh):
 
 
 def build_training_vector(master_dict, train_set, path, label, fold):
-	fh = open('training'+str(fold)+'.csv', 'w+')
+	fh = open('training2'+str(fold)+'.csv', 'w+')
 	for x in train_set:
 		for l in label:
 			files = os.listdir(path+'/'+str(x)+'/'+l)
@@ -49,7 +55,7 @@ def build_training_vector(master_dict, train_set, path, label, fold):
 			
 		
 	fh.close()
-	fh = open('test'+str(fold)+'.csv', 'w+')
+	fh = open('test_2_'+str(fold)+'.csv', 'w+')
 	for l in label:
 		files = os.listdir(path+'/'+str(fold)+'/'+l)
 		for f in files:
@@ -69,12 +75,23 @@ for x in myset:
         Neg_Dict = get_unigram('neg', path, temp)
 	master_dict.update(Pos_Dict)
 	master_dict.update(Neg_Dict)
+	#print master_dict
+	sorted_x = sorted(master_dict.iteritems(), key=operator.itemgetter(1), reverse=True)
+	#print sorted_x[0]
+	#a = str(sorted_x[0]).split(",")[0][2:]
+	#print "sdfsdfsdf",a
+	
+	master_dict = dict()
+	master_dict = {y:x for y,x in sorted_x[:]}
+	
+	print master_dict
+	print len(master_dict)
+	
 	for val in master_dict.iterkeys():
 		master_dict[val] = 0
 	#print master_dict
 	master = ()
 	master = sorted(master_dict)
-
 	m_dict = OrderedDict()
 	for item in master:
 		m_dict[item] = 0	
@@ -84,6 +101,5 @@ for x in myset:
 	build_training_vector(m_dict, temp, path, label, x)
 	temp.add(x)
 	print x	
-
+	
 #fh.close()	
-#print Pos_Dict

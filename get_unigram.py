@@ -20,7 +20,7 @@ def get_unigram(Classlabel,path,IterSet):
 		for fil in files:
 			fh=open(fpath+"/"+fil,"r")
 			lines = fh.read()
-			lines = re.sub("[()+.,\']",'',lines)
+			lines = re.sub("[`\"()+.,\']",'',lines)
 			words = nltk.tokenize.word_tokenize(lines)
 			freq_dist_unigram = FreqDist(words)
 			Prob_dict.update(freq_dist_unigram)

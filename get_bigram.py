@@ -27,19 +27,19 @@ def get_bigram(Classlabel,path,IterSet):
 			bg = bigrams(text.split(" "))
 			freq_dist_bigram = FreqDist(bg)
 			Prob_dict.update(freq_dist_bigram)
-	'''
-	prob_sum = 0
+	
+	#prob_sum = 0
 	num_words = 0
 	for elem in Prob_dict.values():
 		num_words += elem
 	
 	for k in Prob_dict:
 		val = Prob_dict[k] 
-		Prob_dict[k] = val#/float(num_words)
+		Prob_dict[k] = float(val)/float(num_words)
 		#prob_sum = prob_sum + Prob_dict[k]
 	#print Prob_dict	
 	#print prob_sum
-	'''
+	
 	return Prob_dict
 	
 

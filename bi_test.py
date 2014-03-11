@@ -6,6 +6,18 @@ import re
 import os
 from math import *
 
+def convert(Prob_dist_uni, Prob_dist_bi):
+	
+	for item in Prob_dist_bi.iterkeys():
+		#val = Prob_dist_bi[item]
+		#print item		
+		if item[0] in Prob_dist_uni.keys():	
+			Prob_dist_bi[item] = Prob_dist_bi[item]/Prob_dist_uni[item[0]]
+		else:
+			Prob_dist_bi[item] = 0.0
+	return Prob_dist_bi
+
+
 def perplexity(Prob_dist_uni, Prob_dist_bi, filename):
 	fh = open(filename, 'r')
         lines = fh.read()
@@ -24,14 +36,14 @@ def perplexity(Prob_dist_uni, Prob_dist_bi, filename):
 	for pair in bg:
 		if pair in Prob_dist_bi.keys():
 			 if pair[0] in Prob_dist_uni.keys():
-				prob = prob + log10(float(Prob_dist_bi[pair])/float(Prob_dist_uni[pair[0]]))
-			#print prob
+				prob = prob + log10(float(Prob_dist_bi[pair]))
+		  	        #print prob
 		else:	
 			prob = prob + 0.0
 
 	perplex = float(-1)*(float(1)/float(v))*prob
-	perplex = 10**perplex
-	print perplex
+	perplex = 10000*(10**perplex)
+	#print perplex
 	return perplex
 
 myset = Set([1,2,3,4,5]);
@@ -59,13 +71,21 @@ for x in myset:
 	fp.writelines("Test folder:"+str(x)+"\n")
 	#test positive folder under test folder
 	
+	Pos_Dict_bi = convert(Pos_Dict_uni, Pos_Dict_bi)
+	Neg_Dict_bi = convert(Neg_Dict_uni, Neg_Dict_bi)
+	y_true = list()
+	y_pred = list()
 	for test in test_file_p:
 		pos_perp = perplexity(Pos_Dict_uni, Pos_Dict_bi, fpath+"/pos/"+test)
 		neg_perp = perplexity(Neg_Dict_uni, Neg_Dict_bi, fpath+"/pos/"+test)
 		if pos_perp < neg_perp:
+                        y_true.append(int(1))
+			y_pred.append(int(1))
                         print "original pos\t"+test+"\tpred pos\n" 
 			#fp.writelines("original pos\t"+test+"\tpred pos\n")
 		else:
+                        y_true.append(int(1))
+			y_pred.append(int(0))
                         print "original pos\t"+test+"\tpred neg\n" 
 			#fp.writelines("original pos\t"+test+"\tpred neg\n")
 	#test negative folder under test folder
@@ -78,13 +98,21 @@ for x in myset:
 		neg_perp = perplexity(Neg_Dict_uni, Neg_Dict_bi, fpath+"/neg/"+test) 
         	#print neg_perp
 	        if pos_perp < neg_perp:
+                        y_true.append(int(0))
+			y_pred.append(int(1))
                         print "original neg\t"+test+"\tpred pos\n" 
 			#fp.writelines("original neg\t"+test+"\tpred pos\n")
                 else:
-                        print "original neg\t"+test+"\tpred neg\n" 
+                        y_true.append(int(0))
+			y_pred.append(int(0))
+			print "original neg\t"+test+"\tpred neg\n" 
                         #fp.writelines("original neg\t"+test+"\tpred neg\n")
 		 
  	print "in progress"	
+
+	target_names = ['pos', 'neg']
+	from sklearn.metrics import classification_report
+	print(classification_report(y_true, y_pred, target_names=target_names))
 	break
 	temp.add(x)
 
